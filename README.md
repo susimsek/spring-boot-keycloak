@@ -26,6 +26,10 @@ sudo chmod +x build.sh
 docker-compose up -d
 ```
 
+## Notes
+
+> Keycloak access should be 'keycloak' instead of localhost
+
 ## Used Technologies
 
 * Spring Boot 2.2.6
