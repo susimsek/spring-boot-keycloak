@@ -1,0 +1,18 @@
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+keycloak:
+  auth-server-url: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:9080}/auth
+  ssl-required: none
+  realm: ${KEYCLOAK_REALM:springcloud}
+  resource: ${KEYCLOAK_CLIENT:api-services}
+  bearer-only: true
+  confidential-port: 0
+  use-resource-role-mappings: false
+  principal-attribute: preferred_username

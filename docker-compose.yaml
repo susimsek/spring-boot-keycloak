@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  spring-boot-keycloak:
+    image: spring-boot-keycloak:0.0.1-SNAPSHOT
+    container_name: spring-boot-keycloak
+    restart: on-failure
+    depends_on:
+      - keycloak
+    environment:
+      KEYCLOAK_HOST: keycloak
+      KEYCLOAK_PORT: 9080
+      KEYCLOAK_REALM: springcloud
+      KEYCLOAK_CLIENT: api-services
+    ports:
+      - 8081:8081
+
+  keycloak:
+    image: jboss/keycloak:9.0.3
+    container_name: keycloak
+    restart: on-failure
+    depends_on:
+      - keycloak-postgres
+    command:
+      [
+        '-b',
+        '0.0.0.0',
+        '-Djboss.socket.binding.port-offset=1000',
+        '-Djava.net.preferIPv4Stack=true',
+        '-Dkeycloak.profile.feature.upload_scripts=enabled',
+        '-Dkeycloak.migration.action=import',
+        '-Dkeycloak.migration.provider=dir',
+        '-Dkeycloak.migration.dir=/tmp/keycloak-import',
+        '-Dkeycloak.migration.strategy=IGNORE_EXISTING',
+        '-Dkeycloak.migration.usersExportStrategy=SAME_FILE',
+        '-Dkeycloak.migration.realmName=springcloud'
+      ]
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: keycloak
+      PROXY_ADDRESS_FORWARDING: "true"
+      JDBC_PARAMS: "characterEncoding=UTF-8&createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+    ports:
+      - 9080:9080
+    volumes:
+    - ./keycloak:/tmp/keycloak-import
+
+  keycloak-postgres:
+    image: postgres:latest
+    container_name: keycloak-postgres
+    restart: on-failure
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    #volumes:
+    #  - ./data/keycloak:/var/lib/postgresql/data
