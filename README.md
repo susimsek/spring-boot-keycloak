@@ -28,7 +28,7 @@ docker-compose up -d
 
 ## Notes
 
-> Keycloak access should be 'keycloak' instead of localhost
+> Keycloak access must be 'keycloak' instead of localhost for token request
 
 ## Used Technologies
 
